@@ -1,4 +1,4 @@
-class Node {
+export class Node {
    constructor(value) {
       this.value = value;
       this.left = null;
@@ -6,7 +6,7 @@ class Node {
    }
 }
 
-class Tree {
+export class Tree {
    constructor(array) {
       // Sort array during construction and remove duplicates using Set
       let sortedArray = Array.from(new Set(array));
@@ -133,7 +133,7 @@ class Tree {
    }
 
    // Initial node call should be root
-   inorder(callback, node) {
+   inOrder(callback, node) {
       if (callback === undefined || callback === null) {
          throw new Error("Callback function required");
       }
@@ -141,9 +141,9 @@ class Tree {
       if (node === null) {
          return;
       }
-      this.inorder(callback, node.left);
+      this.inOrder(callback, node.left);
       callback(node);
-      this.inorder(callback, node.right);
+      this.inOrder(callback, node.right);
    }
 
    // Initial node call should be root
@@ -198,9 +198,25 @@ class Tree {
          return this.depth(node.right, value, depthValue + 1);
       }
    }
+
+   isBalanced() {
+      let leftHeight = this.height(this.root.left);
+      let rightHeight = this.height(this.root.right);
+      if (leftHeight > rightHeight + 1 || rightHeight > leftHeight + 1) {
+         return false;
+      } else {
+         return true;
+      }
+   }
+
+   rebalance() {
+      let array = [];
+      this.inOrder((node) => array.push(node.value), this.root);
+      this.root = this.buildTree(array);
+   }
 }
 
-const prettyPrint = (node, prefix = "", isLeft = true) => {
+export const prettyPrint = (node, prefix = "", isLeft = true) => {
    if (node === null) {
       return;
    }
@@ -212,18 +228,3 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
       prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
    }
 };
-
-// Test code for depth function
-const testTree = new Tree([10, 5, 15, 2, 7, 12, 20]);
-
-// Define the values to test
-const testValues = [10, 5, 15, 2, 7, 12, 20, 100]; // 100 is not in the tree
-
-// Run the depth function and log results
-testValues.forEach(value => {
-  const depthValue = testTree.depth(testTree.root, value);
-  console.log(`Depth of node with value ${value}: ${depthValue}`);
-});
-
-// Optional: Print the tree for visual inspection
-prettyPrint(testTree.root);
