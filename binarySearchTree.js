@@ -113,10 +113,14 @@ class Tree {
    }
 
    levelOrder(callback) {
+      if (callback === undefined || callback === null) {
+         throw new Error("Callback function required");
+      }
+
       let queue = [];
       let node;
       queue.push(this.root);
-      while(queue.length !== 0) {
+      while (queue.length !== 0) {
          node = queue.shift();
          callback(node);
          if (node.left !== null) {
@@ -125,6 +129,73 @@ class Tree {
          if (node.right !== null) {
             queue.push(node.right);
          }
+      }
+   }
+
+   // Initial node call should be root
+   inorder(callback, node) {
+      if (callback === undefined || callback === null) {
+         throw new Error("Callback function required");
+      }
+
+      if (node === null) {
+         return;
+      }
+      this.inorder(callback, node.left);
+      callback(node);
+      this.inorder(callback, node.right);
+   }
+
+   // Initial node call should be root
+   preOrder(callback, node) {
+      if (callback === undefined || callback === null) {
+         throw new Error("Callback function required");
+      }
+
+      if (node === null) {
+         return;
+      }
+      callback(node);
+      this.preOrder(callback, node.left);
+      this.preOrder(callback, node.right);
+   }
+
+   // Initial node call should be root
+   postOrder(callback, node) {
+      if (callback === undefined || callback === null) {
+         throw new Error("Callback function required");
+      }
+
+      if (node === null) {
+         return;
+      }
+      this.postOrder(callback, node.left);
+      this.postOrder(callback, node.right);
+      callback(node);
+   }
+
+   height(node) {
+      if (node === null) {
+         return 0;
+      }
+      let leftHeight = this.height(node.left);
+      let rightHeight = this.height(node.right);
+      return Math.max(leftHeight, rightHeight) + 1;
+   }
+
+   // First call node should be root
+   depth(node, value, depthValue = 0) {
+      if (node === null) {
+         return "Node not found";
+      }
+      if (node.value === value) {
+         return depthValue;
+      }
+      if (value < node.value) {
+         return this.depth(node.left, value, depthValue + 1);
+      }
+      if (value > node.value) {
+         return this.depth(node.right, value, depthValue + 1);
       }
    }
 }
@@ -142,15 +213,17 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
    }
 };
 
-// Sample Tree Construction
-const tree = new Tree([1, 2, 3, 4, 5, 6, 7]);
+// Test code for depth function
+const testTree = new Tree([10, 5, 15, 2, 7, 12, 20]);
 
-// Function to collect the level order traversal result
-let result = [];
-tree.levelOrder(node => result.push(node.value));
+// Define the values to test
+const testValues = [10, 5, 15, 2, 7, 12, 20, 100]; // 100 is not in the tree
 
-// Print the result to verify correct level order traversal
-console.log(result); // Expected output: [4, 2, 6, 1, 3, 5, 7]
+// Run the depth function and log results
+testValues.forEach(value => {
+  const depthValue = testTree.depth(testTree.root, value);
+  console.log(`Depth of node with value ${value}: ${depthValue}`);
+});
 
-// Pretty print the tree
-prettyPrint(tree.root);
+// Optional: Print the tree for visual inspection
+prettyPrint(testTree.root);
